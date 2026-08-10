@@ -1,0 +1,37 @@
+[Unit]
+Description=Joshua Client — gRPC daemon for IV&V hardware validation
+Documentation=https://github.com/SiliconCentric/Joshua-Client
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=joshua
+Group=joshua
+WorkingDirectory=/var/lib/joshua
+# Starts BOTH listeners:
+#   - ClientService (stream path → Server, default port 50051)
+#   - HalService    (SDK/E2E path,          default port 50052)
+ExecStart=/usr/bin/joshua-client
+Restart=on-failure
+RestartSec=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=joshua-client
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=full
+PrivateTmp=yes
+ReadWritePaths=/var/lib/joshua
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+[Install]
+WantedBy=multi-user.target
