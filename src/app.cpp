@@ -10,7 +10,7 @@
 
 #include <grpcpp/grpcpp.h>
 
-// ─── Real adapters (35 modules with HAL source) ───────────────────────────
+// ─── Real adapters (51 modules with HAL source) ───────────────────────────
 #include "registry/adapters/audio_interfaces_adapter.h"
 #include "registry/adapters/camera_interfaces_adapter.h"
 #include "registry/adapters/camera_module3_adapter.h"
@@ -47,23 +47,23 @@
 #include "registry/adapters/vision_accelerator_adapter.h"
 #include "registry/adapters/watchdog_and_reset_adapter.h"
 
-// ─── Phase 3 — 16 new real adapters (DISABLED: HAL libs not yet implemented) ──
-// #include "registry/adapters/accelerometer_adapter.h"
-// #include "registry/adapters/analog_input_adapter.h"
-// #include "registry/adapters/battery_adapter.h"
-// #include "registry/adapters/bluetooth_adapter.h"
-// #include "registry/adapters/can_bus_adapter.h"
-// #include "registry/adapters/emmc_adapter.h"
-// #include "registry/adapters/i2c_adapter.h"
-// #include "registry/adapters/mipi_csi_adapter.h"
-// #include "registry/adapters/mipi_dsi_adapter.h"
-// #include "registry/adapters/nvme_adapter.h"
-// #include "registry/adapters/pwm_output_adapter.h"
-// #include "registry/adapters/rs485_adapter.h"
-// #include "registry/adapters/rtc_adapter.h"
-// #include "registry/adapters/sd_card_adapter.h"
-// #include "registry/adapters/spi_adapter.h"
-// #include "registry/adapters/uart_adapter.h"
+// ─── Phase 3 — 16 real adapters (HAL libs implemented) ───────────────
+#include "registry/adapters/accelerometer_adapter.h"
+#include "registry/adapters/analog_input_adapter.h"
+#include "registry/adapters/battery_adapter.h"
+#include "registry/adapters/bluetooth_adapter.h"
+#include "registry/adapters/can_bus_adapter.h"
+#include "registry/adapters/emmc_adapter.h"
+#include "registry/adapters/i2c_adapter.h"
+#include "registry/adapters/mipi_csi_adapter.h"
+#include "registry/adapters/mipi_dsi_adapter.h"
+#include "registry/adapters/nvme_adapter.h"
+#include "registry/adapters/pwm_output_adapter.h"
+#include "registry/adapters/rs485_adapter.h"
+#include "registry/adapters/rtc_adapter.h"
+#include "registry/adapters/sd_card_adapter.h"
+#include "registry/adapters/spi_adapter.h"
+#include "registry/adapters/uart_adapter.h"
 
 // ─── Honest-stub for any unrecognised modules ─────────────────────────────
 #include "registry/adapters/stub_adapter.h"
@@ -81,7 +81,7 @@ static std::unique_ptr<AdapterRegistry> build_adapter_registry(
 {
     auto reg = std::make_unique<AdapterRegistry>();
 
-    // ── Real adapters — 35 modules with HAL C++ source ────────────────────
+    // ── Real adapters — 51 modules with HAL C++ source ────────────────────
     reg->register_adapter(std::make_unique<AudioInterfacesAdapter>());
     reg->register_adapter(std::make_unique<CameraInterfacesAdapter>());
     reg->register_adapter(std::make_unique<CameraModule3Adapter>());
@@ -118,23 +118,23 @@ static std::unique_ptr<AdapterRegistry> build_adapter_registry(
     reg->register_adapter(std::make_unique<VisionAcceleratorAdapter>());
     reg->register_adapter(std::make_unique<WatchdogAndResetAdapter>());
 
-    // ── Phase 3 — 16 new real adapters (DISABLED: HAL libs not yet implemented) ──
-    // reg->register_adapter(std::make_unique<AccelerometerAdapter>());
-    // reg->register_adapter(std::make_unique<AnalogInputAdapter>());
-    // reg->register_adapter(std::make_unique<BatteryAdapter>());
-    // reg->register_adapter(std::make_unique<BluetoothAdapter>());
-    // reg->register_adapter(std::make_unique<CanBusAdapter>());
-    // reg->register_adapter(std::make_unique<EmmcAdapter>());
-    // reg->register_adapter(std::make_unique<I2cAdapter>());
-    // reg->register_adapter(std::make_unique<MipiCsiAdapter>());
-    // reg->register_adapter(std::make_unique<MipiDsiAdapter>());
-    // reg->register_adapter(std::make_unique<NvmeAdapter>());
-    // reg->register_adapter(std::make_unique<PwmOutputAdapter>());
-    // reg->register_adapter(std::make_unique<Rs485Adapter>());
-    // reg->register_adapter(std::make_unique<RtcAdapter>());
-    // reg->register_adapter(std::make_unique<SdCardAdapter>());
-    // reg->register_adapter(std::make_unique<SpiAdapter>());
-    // reg->register_adapter(std::make_unique<UartAdapter>());
+    // ── Phase 3 — 16 real adapters (HAL libs implemented) ────────────────
+    reg->register_adapter(std::make_unique<AccelerometerAdapter>());
+    reg->register_adapter(std::make_unique<AnalogInputAdapter>());
+    reg->register_adapter(std::make_unique<BatteryAdapter>());
+    reg->register_adapter(std::make_unique<BluetoothAdapter>());
+    reg->register_adapter(std::make_unique<CanBusAdapter>());
+    reg->register_adapter(std::make_unique<EmmcAdapter>());
+    reg->register_adapter(std::make_unique<I2cAdapter>());
+    reg->register_adapter(std::make_unique<MipiCsiAdapter>());
+    reg->register_adapter(std::make_unique<MipiDsiAdapter>());
+    reg->register_adapter(std::make_unique<NvmeAdapter>());
+    reg->register_adapter(std::make_unique<PwmOutputAdapter>());
+    reg->register_adapter(std::make_unique<Rs485Adapter>());
+    reg->register_adapter(std::make_unique<RtcAdapter>());
+    reg->register_adapter(std::make_unique<SdCardAdapter>());
+    reg->register_adapter(std::make_unique<SpiAdapter>());
+    reg->register_adapter(std::make_unique<UartAdapter>());
 
     // ── Honest stubs — for any truly unrecognised module IDs ─────────────
     // Returns SKIPPED with an explanatory message, NOT a fake pass.

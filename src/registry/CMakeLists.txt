@@ -38,23 +38,23 @@ add_library(joshua_registry STATIC
     adapters/video_encode_decode_adapter.cc
     adapters/vision_accelerator_adapter.cc
     adapters/watchdog_and_reset_adapter.cc
-    # ── Phase 3 — 16 new real adapters (DISABLED: HAL libs not yet implemented) ──
-    # adapters/accelerometer_adapter.cc
-    # adapters/analog_input_adapter.cc
-    # adapters/battery_adapter.cc
-    # adapters/bluetooth_adapter.cc
-    # adapters/can_bus_adapter.cc
-    # adapters/emmc_adapter.cc
-    # adapters/i2c_adapter.cc
-    # adapters/mipi_csi_adapter.cc
-    # adapters/mipi_dsi_adapter.cc
-    # adapters/nvme_adapter.cc
-    # adapters/pwm_output_adapter.cc
-    # adapters/rs485_adapter.cc
-    # adapters/rtc_adapter.cc
-    # adapters/sd_card_adapter.cc
-    # adapters/spi_adapter.cc
-    # adapters/uart_adapter.cc
+    # ── Phase 3 — 16 real adapters (HAL libs implemented) ────────────────
+    adapters/accelerometer_adapter.cc
+    adapters/analog_input_adapter.cc
+    adapters/battery_adapter.cc
+    adapters/bluetooth_adapter.cc
+    adapters/can_bus_adapter.cc
+    adapters/emmc_adapter.cc
+    adapters/i2c_adapter.cc
+    adapters/mipi_csi_adapter.cc
+    adapters/mipi_dsi_adapter.cc
+    adapters/nvme_adapter.cc
+    adapters/pwm_output_adapter.cc
+    adapters/rs485_adapter.cc
+    adapters/rtc_adapter.cc
+    adapters/sd_card_adapter.cc
+    adapters/spi_adapter.cc
+    adapters/uart_adapter.cc
     # ── Honest stub for unrecognised modules ─────────────────────────────
 )
 
