@@ -14,7 +14,8 @@ JOBS := $(shell nproc)
 # QEMU ARM64 emulation can't sustain as many parallel GCC processes as the
 # host; cap Docker cross-builds to avoid cc1plus segfaults under heavy load.
 DOCKER_JOBS := $(shell echo $$(( $(shell nproc) < 4 ? $(shell nproc) : 4 )))
-DOCKER_IMAGE := joshua
+# Distinct image name so it does not collide with Joshua-HAL's 'joshua' image.
+DOCKER_IMAGE := joshua-client
 
 # Mount the *parent* Joshua/ directory so both Joshua-Client and Joshua-HAL
 # are visible inside the container (CMakeLists.txt references ../Joshua-HAL/...).
