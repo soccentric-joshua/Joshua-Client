@@ -2,29 +2,43 @@
 
 ## Project Summary
 
-Joshua-Client is the embedded C++17 agent that connects a Joshua test target to Joshua-Server and exposes the target to the Python SDK. The codebase is built with CMake/Ninja and is organized around a long-running application, a gRPC stream to the server, a local HalService endpoint, and a registry of hardware test adapters. Its configuration layer reads TOML settings such as the server address, listening port, spool limits, TLS paths, and log files. The client uses SQLite-backed durable storage so results and collected logs can wait for a reconnected server instead of being discarded during a network interruption.
+Joshua-Client is the embedded C++17 agent that connects a Joshua test target to Joshua-Server and
+exposes the target to the Python SDK. The codebase is built with CMake/Ninja and is organized around
+a long-running application, a gRPC stream to the server, a local HalService endpoint, and a registry
+of hardware test adapters. Its configuration layer reads TOML settings such as the server address,
+listening port, spool limits, TLS paths, and log files. The client uses SQLite-backed durable
+storage so results and collected logs can wait for a reconnected server instead of being discarded
+during a network interruption.
 
-The execution path is represented by the run orchestrator and module registry. The registry dispatches module/test identifiers to adapters and can return an explicit skipped result for an unsupported module. The HAL bridge serializes test results into the project protobuf contract, while the stream component handles outbound delivery and server commands. A separate HalService gRPC listener supports SDK-triggered tests, and LogCollector, Janitor, and DiagSocket provide operational support around the core run path. The repository also contains an ARM64 Docker build path, systemd installation assets, sample configuration, and Doxygen/CMake metadata. The checked-in tests focus on result serialization and orchestration; hardware behavior and a live server/client deployment still require target-side verification.
+The execution path is represented by the run orchestrator and module registry. The registry
+dispatches module/test identifiers to adapters and can return an explicit skipped result for an
+unsupported module. The HAL bridge serializes test results into the project protobuf contract, while
+the stream component handles outbound delivery and server commands. A separate HalService gRPC
+listener supports SDK-triggered tests, and LogCollector, Janitor, and DiagSocket provide operational
+support around the core run path. The repository also contains an ARM64 Docker build path, systemd
+installation assets, sample configuration, and Doxygen/CMake metadata. The checked-in tests focus on
+result serialization and orchestration; hardware behavior and a live server/client deployment still
+require target-side verification.
 
 ## Feature Inventory
 
 | # | Name / Description | Implemented? | Test Coverage? | Manual Test |
-|---:|---|---|---|---|
-| 1 | C++17 daemon entry point and lifecycle | Implemented | Unknown | [ ] Manual verification required |
-| 2 | TOML client configuration | Implemented | Unknown | [ ] Manual verification required |
-| 3 | Bidirectional gRPC stream to Joshua-Server | Implemented | Partial; no live transport test identified | [ ] Manual verification required |
-| 4 | SQLite result/log spool and retry storage | Implemented | Partial; no replay failure test identified | [ ] Manual verification required |
-| 5 | Run orchestration and batching | Implemented | `tests/test_run_orchestrator.cc` | [ ] Manual verification required |
-| 6 | HAL result to protobuf serialization | Implemented | `tests/test_result_serializer.cc` | [ ] Manual verification required |
-| 7 | Module registry and adapter dispatch | Implemented | Partial; indirectly exercised | [ ] Manual verification required |
-| 8 | Unsupported-module stub/skipped result | Implemented | Unknown | [ ] Manual verification required |
-| 9 | HalService gRPC endpoint for SDK calls | Implemented | Unknown | [ ] Manual verification required |
-| 10 | Configurable log tailing and forwarding | Implemented | Unknown | [ ] Manual verification required |
-| 11 | Janitor spool cleanup | Implemented | Unknown | [ ] Manual verification required |
-| 12 | Unix diagnostic socket | Implemented | Unknown | [ ] Manual verification required |
-| 13 | TLS configuration hooks | Partial; live TLS not verified | Unknown | [ ] Manual verification required |
-| 14 | Native and Docker/ARM64 builds | Implemented | Documented; target build unknown | [ ] Manual verification required |
-| 15 | systemd installation/service assets | Implemented | Unknown | [ ] Manual verification required |
+| --- | --- | --- | --- | --- |
+|   1 | C++17 daemon entry point and lifecycle     | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|   2 | TOML client configuration                  | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|   3 | Bidirectional gRPC stream to Joshua-Server | Implemented                    | Partial; no live transport test identified | [ ] Manual verification required |
+|   4 | SQLite result/log spool and retry storage  | Implemented                    | Partial; no replay failure test identified | [ ] Manual verification required |
+|   5 | Run orchestration and batching             | Implemented                    | `tests/test_run_orchestrator.cc`           | [ ] Manual verification required |
+|   6 | HAL result to protobuf serialization       | Implemented                    | `tests/test_result_serializer.cc`          | [ ] Manual verification required |
+|   7 | Module registry and adapter dispatch       | Implemented                    | Partial; indirectly exercised              | [ ] Manual verification required |
+|   8 | Unsupported-module stub/skipped result     | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|   9 | HalService gRPC endpoint for SDK calls     | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|  10 | Configurable log tailing and forwarding    | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|  11 | Janitor spool cleanup                      | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|  12 | Unix diagnostic socket                     | Implemented                    | Unknown                                    | [ ] Manual verification required |
+|  13 | TLS configuration hooks                    | Partial; live TLS not verified | Unknown                                    | [ ] Manual verification required |
+|  14 | Native and Docker/ARM64 builds             | Implemented                    | Documented; target build unknown           | [ ] Manual verification required |
+|  15 | systemd installation/service assets        | Implemented                    | Unknown                                    | [ ] Manual verification required |
 
 ## Build and Test
 
@@ -34,66 +48,14 @@ make build
 cd build/native && ctest --output-on-failure
 ```
 
-Focused binaries are `test_result_serializer` and `test_run_orchestrator`. Hardware access, SDK calls, spool replay, and a live Client-to-Server stream need manual integration testing.# Joshua-Client
+Focused binaries are `test_result_serializer` and `test_run_orchestrator`. Hardware access, SDK
+calls, spool replay, and a live Client-to-Server stream need manual integration testing.
 
-## Project Summary
-
-Joshua-Client is the embedded C++17 agent that connects a Joshua test target to
-Joshua-Server and exposes the target to the Python SDK. The codebase is built
-with CMake/Ninja and is organized around a long-running application, a gRPC
-stream to the server, a local HalService endpoint, and a registry of hardware
-test adapters. Its configuration layer reads TOML settings such as the server
-address, listening port, spool limits, TLS paths, and log files. The client
-uses SQLite-backed durable storage so results and collected logs can wait for a
-reconnected server instead of being discarded during a network interruption.
-
-The execution path is represented by the run orchestrator and module registry.
-The registry dispatches module/test identifiers to adapters and can return an
-explicit skipped result for an unsupported module. The HAL bridge serializes
-test results into the project protobuf contract, while the stream component
-handles outbound delivery and server commands. A separate HalService gRPC
-listener supports SDK-triggered tests, and LogCollector, Janitor, and
-DiagSocket provide operational support around the core run path. The repository
-also contains an ARM64 Docker build path, systemd installation assets, sample
-configuration, and Doxygen/CMake metadata. The checked-in tests currently focus
-on result serialization and orchestration; hardware behavior and a live
-server/client deployment still require target-side verification.
-
-## Feature Inventory
-
-| # | Name / Description | Implemented? | Test Coverage? | Manual Test |
-|---:|---|---|---|---|
-| 1 | C++17 daemon entry point and application lifecycle | Implemented | Unknown; no dedicated lifecycle test identified | [ ] Manual verification required |
-| 2 | TOML client configuration and sample config | Implemented | Unknown | [ ] Manual verification required |
-| 3 | Outbound bidirectional gRPC stream to Joshua-Server | Implemented | Partial; orchestration tests do not prove live transport | [ ] Manual verification required |
-| 4 | SQLite result and log spool for retry/durability | Implemented | Partial; no failure/replay test identified | [ ] Manual verification required |
-| 5 | Run orchestrator and batching | Implemented | Covered by `tests/test_run_orchestrator.cc` | [ ] Manual verification required |
-| 6 | HAL result to protobuf serialization | Implemented | Covered by `tests/test_result_serializer.cc` | [ ] Manual verification required |
-| 7 | Module registry and adapter dispatch | Implemented | Partial; registry behavior is indirectly exercised | [ ] Manual verification required |
-| 8 | Stub adapter with skipped results for unsupported modules | Implemented | Unknown | [ ] Manual verification required |
-| 9 | HalService gRPC endpoint for SDK calls | Implemented | Unknown | [ ] Manual verification required |
-| 10 | Configurable log tailing and forwarding | Implemented | Unknown | [ ] Manual verification required |
-| 11 | Janitor cleanup of old spool entries | Implemented | Unknown | [ ] Manual verification required |
-| 12 | Unix diagnostic socket | Implemented | Unknown | [ ] Manual verification required |
-| 13 | TLS configuration hooks | Partial; configuration paths exist, live TLS is not verified here | Unknown | [ ] Manual verification required |
-| 14 | Native and Docker/ARM64 build workflows | Implemented | Build commands documented; target build not verified here | [ ] Manual verification required |
-| 15 | systemd installation/service assets | Implemented | Unknown | [ ] Manual verification required |
-
-## Build and Test
-
-```bash
-make configure
-make build
-cd build/native && ctest --output-on-failure
-```
-
-The focused test binaries are `test_result_serializer` and
-`test_run_orchestrator`. Hardware access, SDK-to-client calls, spool replay,
-and a live Client-to-Server stream need a manual integration run.
 - [Architecture](#architecture)
 - [System Requirements](#system-requirements)
 - [Dependencies](#dependencies)
-- [Building](#building) - [Native Build](#native-build) - [Docker Build (Cross-compilation)](#docker-build-cross-compilation)
+- [Building](#building) - [Native Build](#native-build) -
+  [Docker Build (Cross-compilation)](#docker-build-cross-compilation)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Running](#running) - [Manual Execution](#manual-execution) - [Systemd Service](#systemd-service)
@@ -102,34 +64,37 @@ and a live Client-to-Server stream need a manual integration run.
 - [Supported Hardware Modules](#supported-hardware-modules)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
-- [License](#license) --- ## Overview Joshua-Client provides: - **Test Orchestration**: Executes hardware validation tests via 35+ module adapters (CPU, GPU, Thermal, Storage, USB, Ethernet, etc.)
-- **Result Serialization**: Converts HAL test results to Protocol Buffer format with proper sequencing and timestamping
+- [License](#license)
+
+## Overview Joshua-Client provides: - **Test Orchestration**: Executes hardware validation tests via 35+ module adapters (CPU, GPU, Thermal, Storage, USB, Ethernet, etc.)
+
+- **Result Serialization**: Converts HAL test results to Protocol Buffer format with proper
+  sequencing and timestamping
 - **Durable Storage**: SQLite-based spool for result buffering and replay on network interruption
 - **Server Streaming**: Bidirectional gRPC stream to Joshua-Server for commands and result delivery
 - **SDK Interface**: HalService gRPC endpoint for Python SDK and end-to-end test integration
 - **Log Collection**: Tails specified log files and forwards entries to server
-- **Diagnostic Socket**: Local diagnostic interface for health monitoring **Target Platforms**: Sitara (Sitara), Sitara , or any ARM64/x86_64 Linux system with GPIO/hardware access. --- ## Architecture ```
-┌─────────────────────────────────────────────────────────────┐
-│ Joshua-Client │
-│ │
-│ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ │
-│ │ StreamClient │──│ Spool │──│RunOrchestrator│ │
-│ │ (gRPC to │ │ (SQLite3) │ │ (Test Exec) │ │
-│ │ Server) │ └──────────────┘ └───────┬───────┘ │
-│ └──────────────┘ │ │
-│ │ │
-│ ┌──────────────┐ ┌──────────────┐ ┌───────▼───────┐ │
-│ │ LogCollector │ │ DiagSocket │ │ Module │ │
-│ │ │ │ │ │ Registry │ │
-│ └──────────────┘ └──────────────┘ └───────┬───────┘ │
-│ │ │
-│ ┌──────────────┐ ┌───────▼───────┐ │
-│ │ HalService │◄───────────────────│ 35+ Adapters │ │
-│ │ (gRPC for │ │ (HAL Bridge) │ │
-│ │ PySDK) │ └───────────────┘ │
-│ └──────────────┘ │
-└─────────────────────────────────────────────────────────────┘ ▲ │ │ │ │ ▼ Joshua-Server Joshua-HAL (gRPC Stream) (Hardware Abstraction)
-``` ### Core Components | Component | Purpose |
+- **Diagnostic Socket**: Local diagnostic interface for health monitoring **Target Platforms**:
+  Sitara (Sitara), Sitara , or any ARM64/x86_64 Linux system with GPIO/hardware access.
+
+## Architecture ```
+
+┌─────────────────────────────────────────────────────────────┐ │ Joshua-Client │ │ │ │
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐ │ │ │ StreamClient │──│ Spool
+│──│RunOrchestrator│ │ │ │ (gRPC to │ │ (SQLite3) │ │ (Test Exec) │ │ │ │ Server) │ └──────────────┘
+└───────┬───────┘ │ │ └──────────────┘ │ │ │ │ │ │ ┌──────────────┐ ┌──────────────┐
+┌───────▼───────┐ │ │ │ LogCollector │ │ DiagSocket │ │ Module │ │ │ │ │ │ │ │ Registry │ │ │
+└──────────────┘ └──────────────┘ └───────┬───────┘ │ │ │ │ │ ┌──────────────┐ ┌───────▼───────┐ │ │
+│ HalService │◄───────────────────│ 35+ Adapters │ │ │ │ (gRPC for │ │ (HAL Bridge) │ │ │ │ PySDK) │
+└───────────────┘ │ │ └──────────────┘ │
+└─────────────────────────────────────────────────────────────┘ ▲ │ │ │ │ ▼ Joshua-Server Joshua-HAL
+(gRPC Stream) (Hardware Abstraction)
+
+```
+
+### Core Components
+
+| Component | Purpose |
 |-----------|---------|
 | **StreamClient** | Bidirectional gRPC stream to Joshua-Server; handles reconnection and heartbeat |
 | **Spool** | SQLite3 database for durable result/log storage; enforces capacity limits |
@@ -138,14 +103,18 @@ and a live Client-to-Server stream need a manual integration run.
 | **HalService** | gRPC service (port 50052) for Python SDK to invoke HAL tests |
 | **LogCollector** | Tails configured log files and forwards to server |
 | **Janitor** | Periodic cleanup of old spool entries |
-| **DiagSocket** | Unix socket for local diagnostics | --- ## System Requirements ### Hardware
+| **DiagSocket** | Unix socket for local diagnostics |
+
+## System Requirements ### Hardware
 - **Minimum**: ARM64 or x86_64 processor (Sitara AM62x, Sitara , or similar)
 - **Recommended**: 1 GB RAM, 2 GB storage for spool database ### Operating System
 - **Ubuntu 22.04 LTS** (primary target)
 - **Ubuntu 20.04 LTS** (supported with manual dependency builds)
 - Other Debian-based ARM64/x86_64 distributions (untested) ### Network
 - Connectivity to **Joshua-Server** (configurable IP/port)
-- Optional: Access to hardware peripherals (GPIO, I2C, SPI, USB, etc.) --- ## Dependencies ### Build-time Dependencies | Library | Version | Purpose |
+- Optional: Access to hardware peripherals (GPIO, I2C, SPI, USB, etc.)
+
+## Dependencies ### Build-time Dependencies | Library | Version | Purpose |
 |---------|---------|---------|
 | **CMake** | ≥ 3.16 | Build system |
 | **GCC/G++** | ≥ 9.0 (C++17) | Compiler |
@@ -159,7 +128,11 @@ and a live Client-to-Server stream need a manual integration run.
 |------------|-------|
 | **Joshua-HAL** | Sibling repository (must be in `../Joshua-HAL/`) |
 | **libprotobuf.so** | Shared library for Protocol Buffers |
-| **libgrpc++.so** | gRPC C++ runtime | --- ## Building ### Prerequisites 1. **Clone both repositories** (they must be siblings): ```bash mkdir -p ~/workspace/Joshua cd ~/workspace/Joshua git clone <joshua-client-repo-url> Joshua-Client git clone <joshua-hal-repo-url> Joshua-HAL ``` 2. **Install system dependencies**: **Ubuntu 22.04/ 20.04:** ```bash sudo apt-get update sudo apt-get install -y \ build-essential cmake git \ protobuf-compiler libprotobuf-dev \ libgrpc++-dev libgrpc-dev \ libsqlite3-dev libspdlog-dev \ libgtest-dev pkg-config ninja-build ``` 3. **Install header-only libraries** (if not packaged): **toml++** (required on Ubuntu 22.04 ARM64): ```bash git clone --depth=1 --branch v3.4.0 https://github.com/marzer/tomlplusplus.git/tmp/tomlplusplus cmake -S/tmp/tomlplusplus -B/tmp/tomlplusplus/build \ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib sudo cmake --install/tmp/tomlplusplus/build rm -rf/tmp/tomlplusplus ``` **yaml-cpp 0.8.0** (if system version lacks CMake targets): ```bash git clone --depth=1 --branch 0.8.0 https://github.com/jbeder/yaml-cpp.git/tmp/yaml-cpp cmake -S/tmp/yaml-cpp -B/tmp/yaml-cpp/build \ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DYAML_CPP_BUILD_TESTS=OFF cmake --build/tmp/yaml-cpp/build --parallel sudo cmake --install/tmp/yaml-cpp/build rm -rf/tmp/yaml-cpp ``` 4. **Build grpc_cpp_plugin** (if missing): ```bash # Check if grpc_cpp_plugin exists which grpc_cpp_plugin || { # Build from source (see Dockerfile for full build script) # Alternatively, install grpc-plugins package if available sudo apt-get install -y protobuf-compiler-grpc } ``` --- ### Native Build **Using Makefile** (recommended):
+| **libgrpc++.so** | gRPC C++ runtime |
+
+## Building ### Prerequisites 1. **Clone both repositories** (they must be siblings): ```bash mkdir -p ~/workspace/Joshua cd ~/workspace/Joshua git clone <joshua-client-repo-url> Joshua-Client git clone <joshua-hal-repo-url> Joshua-HAL ``` 2. **Install system dependencies**: **Ubuntu 22.04/ 20.04:** ```bash sudo apt-get update sudo apt-get install -y \ build-essential cmake git \ protobuf-compiler libprotobuf-dev \ libgrpc++-dev libgrpc-dev \ libsqlite3-dev libspdlog-dev \ libgtest-dev pkg-config ninja-build ``` 3. **Install header-only libraries** (if not packaged): **toml++** (required on Ubuntu 22.04 ARM64): ```bash git clone --depth=1 --branch v3.4.0 https://github.com/marzer/tomlplusplus.git/tmp/tomlplusplus cmake -S/tmp/tomlplusplus -B/tmp/tomlplusplus/build \ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib sudo cmake --install/tmp/tomlplusplus/build rm -rf/tmp/tomlplusplus ``` **yaml-cpp 0.8.0** (if system version lacks CMake targets): ```bash git clone --depth=1 --branch 0.8.0 https://github.com/jbeder/yaml-cpp.git/tmp/yaml-cpp cmake -S/tmp/yaml-cpp -B/tmp/yaml-cpp/build \ -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DYAML_CPP_BUILD_TESTS=OFF cmake --build/tmp/yaml-cpp/build --parallel sudo cmake --install/tmp/yaml-cpp/build rm -rf/tmp/yaml-cpp ``` 4. **Build grpc_cpp_plugin** (if missing): ```bash # Check if grpc_cpp_plugin exists which grpc_cpp_plugin || { # Build from source (see Dockerfile for full build script) # Alternatively, install grpc-plugins package if available sudo apt-get install -y protobuf-compiler-grpc } ```
+
+### Native Build **Using Makefile** (recommended):
 ```bash
 cd ~/workspace/Joshua/Joshua-Client
 make configure # Run CMake
@@ -173,14 +146,22 @@ cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build . --parallel $(nproc)
 ``` **Output**:
 - Binary: `build/native/bin/joshua-client`
-- Tests: `build/native/bin/test_result_serializer`, `build/native/bin/test_run_orchestrator` --- ### Docker Build (Cross-compilation) For cross-compiling from x86_64 to ARM64 (Sitara): 1. **Build Docker image**: ```bash cd ~/workspace/Joshua/Joshua-Client/docker make build # or: docker buildx build --platform linux/arm64 --load -t joshua . ``` 2. **Enter build container**: ```bash make run # Interactive shell in ARM64 container ``` 3. **Build inside container**: ```bash # Inside container: cd/workspace/Joshua-Client make docker-configure make docker-build ``` 4. **Extract binaries**: ```bash # On host: cd ~/workspace/Joshua/Joshua-Client docker run --rm -v $(pwd):/host joshua \ cp -r/workspace/Joshua-Client/build/cross/bin/host/build/cross/ ``` --- ## Installation ### Manual Installation 1. **Copy binary**: ```bash sudo install -m 0755 build/native/bin/joshua-client/usr/bin/joshua-client ``` 2. **Create configuration directory**: ```bash sudo mkdir -p/etc/joshua sudo cp conf/client.conf.sample/etc/joshua/client.conf sudo chown root:root/etc/joshua/client.conf sudo chmod 0644/etc/joshua/client.conf ``` 3. **Create spool directory**: ```bash sudo mkdir -p/var/lib/joshua/spool sudo chown joshua:joshua/var/lib/joshua/spool # See user setup below ``` 4. **Create joshua user** (for systemd service): ```bash sudo useradd -r -s/usr/sbin/nologin -d/var/lib/joshua joshua sudo chown -R joshua:joshua/var/lib/joshua ``` 5. **Install systemd service**: ```bash sudo cp systemd/joshua-client.service/etc/systemd/system/ sudo systemctl daemon-reload ``` --- ### CMake Install Alternatively, use the CMake install target:
+- Tests: `build/native/bin/test_result_serializer`, `build/native/bin/test_run_orchestrator`
+
+### Docker Build (Cross-compilation) For cross-compiling from x86_64 to ARM64 (Sitara): 1. **Build Docker image**: ```bash cd ~/workspace/Joshua/Joshua-Client/docker make build # or: docker buildx build --platform linux/arm64 --load -t joshua . ``` 2. **Enter build container**: ```bash make run # Interactive shell in ARM64 container ``` 3. **Build inside container**: ```bash # Inside container: cd/workspace/Joshua-Client make docker-configure make docker-build ``` 4. **Extract binaries**: ```bash # On host: cd ~/workspace/Joshua/Joshua-Client docker run --rm -v $(pwd):/host joshua \ cp -r/workspace/Joshua-Client/build/cross/bin/host/build/cross/ ```
+
+## Installation ### Manual Installation 1. **Copy binary**: ```bash sudo install -m 0755 build/native/bin/joshua-client/usr/bin/joshua-client ``` 2. **Create configuration directory**: ```bash sudo mkdir -p/etc/joshua sudo cp conf/client.conf.sample/etc/joshua/client.conf sudo chown root:root/etc/joshua/client.conf sudo chmod 0644/etc/joshua/client.conf ``` 3. **Create spool directory**: ```bash sudo mkdir -p/var/lib/joshua/spool sudo chown joshua:joshua/var/lib/joshua/spool # See user setup below ``` 4. **Create joshua user** (for systemd service): ```bash sudo useradd -r -s/usr/sbin/nologin -d/var/lib/joshua joshua sudo chown -R joshua:joshua/var/lib/joshua ``` 5. **Install systemd service**: ```bash sudo cp systemd/joshua-client.service/etc/systemd/system/ sudo systemctl daemon-reload ```
+
+### CMake Install Alternatively, use the CMake install target:
 ```bash
 cd build/native
 sudo cmake --install .
 ``` This installs:
 - Binary → `/usr/bin/joshua-client`
 - Config → `/etc/joshua/client.conf`
-- Service → `/lib/systemd/system/joshua-client.service` --- ## Configuration Edit `/etc/joshua/client.conf`: ```toml
+- Service → `/lib/systemd/system/joshua-client.service`
+
+## Configuration Edit `/etc/joshua/client.conf`: ```toml
 # Joshua-Client configuration # ---------------------------------------------------------------------------
 # gRPC server (outbound — connects to Joshua-Server)
 # ---------------------------------------------------------------------------
@@ -209,7 +190,9 @@ log_spool_cap_bytes = 524288000 # 500 MiB # ------------------------------------
 - `server_address`: IP/hostname of Joshua-Server instance **Optional**:
 - `hal_service_port`: Change if port 50052 conflicts
 - `tls_*`: Enable TLS for production deployments
-- `log_paths`: Additional log files to tail (e.g., HAL library logs) --- ## Running ### Manual Execution **Development run** (foreground):
+- `log_paths`: Additional log files to tail (e.g., HAL library logs)
+
+## Running ### Manual Execution **Development run** (foreground):
 ```bash/usr/bin/joshua-client --config/etc/joshua/client.conf
 ``` **With debug logging**:
 ```bash
@@ -219,7 +202,9 @@ SPDLOG_LEVEL=debug/usr/bin/joshua-client --config/etc/joshua/client.conf
 2. Initialize spool database
 3. Connect to Joshua-Server (retry on failure)
 4. Start HalService listener on port 50052
-5. Begin heartbeat loop **Graceful shutdown**: Send `SIGTERM` or `SIGINT` (Ctrl+C) --- ### Systemd Service **Enable and start**:
+5. Begin heartbeat loop **Graceful shutdown**: Send `SIGTERM` or `SIGINT` (Ctrl+C)
+
+### Systemd Service **Enable and start**:
 ```bash
 sudo systemctl enable joshua-client.service
 sudo systemctl start joshua-client.service
@@ -236,10 +221,13 @@ sudo systemctl stop joshua-client.service
 ``` **Restart after config changes**:
 ```bash
 sudo systemctl restart joshua-client.service
-``` --- ## Testing ### Run Unit Tests ```bash
-cd build/native
-ctest --output-on-failure
-``` Or run individual test binaries:
+````
+
+## Testing ### Run Unit Tests ```bash
+
+cd build/native ctest --output-on-failure
+
+````Or run individual test binaries:
 ```bash
 ./bin/test_result_serializer
 ./bin/test_run_orchestrator
@@ -249,7 +237,9 @@ ctest --output-on-failure
 | `test_run_orchestrator` | Tests orchestration logic and batching | ### Manual Integration Test 1. **Start Joshua-Server** (on remote machine or localhost)
 2. **Configure client** to point to server IP
 3. **Run client** with `--config` flag
-4. **Trigger test via SDK**: ```python # Python SDK example from joshua_sdk import Client client = Client("localhost:50052") result = client.run_test("cpu", "frequency_test") print(result) ``` --- ## Project Structure ```
+4. **Trigger test via SDK**: ```python # Python SDK example from joshua_sdk import Client client = Client("localhost:50052") result = client.run_test("cpu", "frequency_test") print(result) ```
+
+## Project Structure ```
 Joshua-Client/
 ├── CMakeLists.txt # Root build configuration
 ├── Makefile # High-level build commands
@@ -284,41 +274,72 @@ Joshua-Client/
 │ ├── Dockerfile # ARM64 build container
 │ └── Makefile # Docker build helpers
 └── client_update/ # Design documents ├── 01_discovery.md ├── 02_plan.md └── ...
-``` --- ## Supported Hardware Modules Joshua-Client includes adapters for **35 hardware modules** (with 16 additional modules planned): ### Active Modules (35) | Category | Modules |
-|----------|---------|
-| **Compute** | CPU, GPU, Deep Learning Accelerator, Vision Accelerator |
-| **Memory** | System Memory, Storage |
-| **Thermal** | Thermal, Environmental |
-| **Power** | Power Management, Watchdog and Reset |
-| **Networking** | Ethernet, Ethernet Switch, Communication Interface |
-| **Connectivity** | USB, PCIe, External Connector |
-| **Peripherals** | GPIO, Camera Interfaces, Camera Module 3, Display Interfaces |
-| **Sensors** | IMU, GNSS |
-| **Audio/Video** | Audio Interfaces, Video Encode/Decode |
-| **System** | Clock and Timing, Software Interface, System Integration |
-| **Safety** | Functional Safety, Reliability, Security Features |
-| **Debug** | Debug and Development Interfaces, MCU Interface |
-| **Specialized** | Serializer/Deserializer, PoE HAT, Sense HAT | ### Phase 3 Modules (16 — Planned) Accelerometer, Analog Input, Battery, Bluetooth, CAN Bus, eMMC, I²C, MIPI CSI, MIPI DSI, NVMe, PWM Output, RS-485, RTC, SD Card, SPI, UART ### Stub Adapter Unrecognized modules fall back to `StubAdapter`, which logs test invocations but returns honest SKIPPED results. --- ## Development ### Coding Standards - **Language**: C++17
+````
+
+## Supported Hardware Modules Joshua-Client includes adapters for **35 hardware modules** (with 16 additional modules planned): ### Active Modules (35) | Category | Modules |
+
+|----------|---------| | **Compute** | CPU, GPU, Deep Learning Accelerator, Vision Accelerator | |
+**Memory** | System Memory, Storage | | **Thermal** | Thermal, Environmental | | **Power** | Power
+Management, Watchdog and Reset | | **Networking** | Ethernet, Ethernet Switch, Communication
+Interface | | **Connectivity** | USB, PCIe, External Connector | | **Peripherals** | GPIO, Camera
+Interfaces, Camera Module 3, Display Interfaces | | **Sensors** | IMU, GNSS | | **Audio/Video** |
+Audio Interfaces, Video Encode/Decode | | **System** | Clock and Timing, Software Interface, System
+Integration | | **Safety** | Functional Safety, Reliability, Security Features | | **Debug** | Debug
+and Development Interfaces, MCU Interface | | **Specialized** | Serializer/Deserializer, PoE HAT,
+Sense HAT | ### Phase 3 Modules (16 — Planned) Accelerometer, Analog Input, Battery, Bluetooth, CAN
+Bus, eMMC, I²C, MIPI CSI, MIPI DSI, NVMe, PWM Output, RS-485, RTC, SD Card, SPI, UART ### Stub
+Adapter Unrecognized modules fall back to `StubAdapter`, which logs test invocations but returns
+honest SKIPPED results.
+
+## Development ### Coding Standards - **Language**: C++17
+
 - **Style**: Follow existing conventions (see `.clang-format` if present)
 - **Logging**: Use `spdlog` macros (`spdlog::info`, `spdlog::error`, etc.)
-- **Error Handling**: Return `bool` or `Status` from init methods; log errors before returning ### Adding a New Module Adapter 1. **Create adapter files**: ```bash touch src/registry/adapters/my_module_adapter.h touch src/registry/adapters/my_module_adapter.cc ``` 2. **Implement `AdapterBase` interface**: ```cpp// my_module_adapter.h #pragma once #include "registry/AdapterBase.h" class MyModuleAdapter : public AdapterBase { public: std::string module_id const override { return "my_module"; } hal::TestResult run_test(const std::string& test_id, const TestParameters& params) override; }; ``` 3. **Register in `app.cpp`**: ```cpp #include "registry/adapters/my_module_adapter.h"// ... reg->register_adapter(std::make_unique<MyModuleAdapter>); ``` 4. **Build and test**: ```bash make build ./build/native/bin/joshua-client --config/etc/joshua/client.conf ``` --- ## Troubleshooting ### Common Issues #### 1. **gRPC connection fails** ``` [ERROR] StreamClient failed to connect to 192.168.1.100:50051 ``` **Solution**: - Verify `server_address` in `/etc/joshua/client.conf` - Check network connectivity: `ping 192.168.1.100` - Ensure Joshua-Server is running and reachable - Check firewall rules: `sudo ufw status` #### 2. **Missing `grpc_cpp_plugin`** ``` CMake Error: grpc_cpp_plugin not found ``` **Solution**: ```bash sudo apt-get install -y protobuf-compiler-grpc # OR build from source (see Dockerfile) ``` #### 3. **Spool database locked** ``` [ERROR] Spool::init failed: database is locked ``` **Solution**: - Stop conflicting instance: `sudo systemctl stop joshua-client` - Check for stale processes: `ps aux | grep joshua-client` - Remove lock if safe: `rm/var/lib/joshua/spool/spool.db-shm` #### 4. **Permission denied on `/var/lib/joshua`** ``` [ERROR] Failed to create spool.db: Permission denied ``` **Solution**: ```bash sudo chown -R joshua:joshua/var/lib/joshua sudo chmod 0755/var/lib/joshua ``` #### 5. **HAL library not found** ``` CMake Error: Could not find Joshua-HAL ``` **Solution**: - Ensure `Joshua-HAL` is in sibling directory: ```bash ls -ld ../Joshua-HAL # Should exist ``` - Clone HAL repository: `git clone <hal-repo> ../Joshua-HAL` #### 6. **Port 50052 already in use** ``` [ERROR] HalService failed to bind: Address already in use ``` **Solution**: - Check what's using the port: `sudo lsof -i :50052` - Change `hal_service_port` in config, or kill conflicting process --- ### Debug Logging Enable verbose logging:
-```bash
+- **Error Handling**: Return `bool` or `Status` from init methods; log errors before returning ###
+  Adding a New Module Adapter 1. **Create adapter files**:
+  `bash touch src/registry/adapters/my_module_adapter.h touch src/registry/adapters/my_module_adapter.cc ` 2.
+  **Implement `AdapterBase` interface**:
+  `cpp// my_module_adapter.h #pragma once #include "registry/AdapterBase.h" class MyModuleAdapter : public AdapterBase { public: std::string module_id const override { return "my_module"; } hal::TestResult run_test(const std::string& test_id, const TestParameters& params) override; }; ` 3.
+  **Register in `app.cpp`**:
+  `cpp #include "registry/adapters/my_module_adapter.h"// ... reg->register_adapter(std::make_unique<MyModuleAdapter>); ` 4.
+  **Build and test**:
+  `bash make build ./build/native/bin/joshua-client --config/etc/joshua/client.conf `
+
+## Troubleshooting ### Common Issues #### 1. **gRPC connection fails** `[ERROR] StreamClient failed to connect to 192.168.1.100:50051` **Solution**: - Verify `server_address` in `/etc/joshua/client.conf` - Check network connectivity: `ping 192.168.1.100` - Ensure Joshua-Server is running and reachable - Check firewall rules: `sudo ufw status` #### 2. **Missing `grpc_cpp_plugin`** `CMake Error: grpc_cpp_plugin not found` **Solution**: `bash sudo apt-get install -y protobuf-compiler-grpc # OR build from source (see Dockerfile) ` #### 3. **Spool database locked** `[ERROR] Spool::init failed: database is locked` **Solution**: - Stop conflicting instance: `sudo systemctl stop joshua-client` - Check for stale processes: `ps aux | grep joshua-client` - Remove lock if safe: `rm/var/lib/joshua/spool/spool.db-shm` #### 4. **Permission denied on `/var/lib/joshua`** `[ERROR] Failed to create spool.db: Permission denied` **Solution**: `bash sudo chown -R joshua:joshua/var/lib/joshua sudo chmod 0755/var/lib/joshua ` #### 5. **HAL library not found** `CMake Error: Could not find Joshua-HAL` **Solution**: - Ensure `Joshua-HAL` is in sibling directory: `bash ls -ld ../Joshua-HAL # Should exist ` - Clone HAL repository: `git clone <hal-repo> ../Joshua-HAL` #### 6. **Port 50052 already in use** `[ERROR] HalService failed to bind: Address already in use` **Solution**: - Check what's using the port: `sudo lsof -i :50052` - Change `hal_service_port` in config, or kill conflicting process
+
+### Debug Logging Enable verbose logging:
+
+````bash
 SPDLOG_LEVEL=debug/usr/bin/joshua-client --config/etc/joshua/client.conf
 ``` Or modify `main.cpp` and rebuild:
 ```cpp
 spdlog::set_level(spdlog::level::debug);// Change from ::info
-``` --- ### Getting Help - **Check logs**: `journalctl -u joshua-client.service -n 200`
+````
+
+### Getting Help - **Check logs**: `journalctl -u joshua-client.service -n 200`
+
 - **Inspect spool**: `sqlite3/var/lib/joshua/spool/spool.db ".tables"`
 - **Test connectivity**: `grpcurl -plaintext <server_ip>:50051 list`
-- **GitHub Issues**: Report bugs with full logs and config (redact sensitive data) --- ## License [Specify license here — e.g., MIT, Apache 2.0, Proprietary] --- ## Contributing 1. Fork the repository
+- **GitHub Issues**: Report bugs with full logs and config (redact sensitive data)
+
+## License [Specify license here — e.g., MIT, Apache 2.0, Proprietary]
+
+## Contributing 1. Fork the repository
+
 2. Create a feature branch (`git checkout -b feature/my-adapter`)
 3. Commit changes (`git commit -am 'Add XYZ adapter'`)
 4. Push to branch (`git push origin feature/my-adapter`)
 5. Open a Pull Request **Guidelines**:
+
 - Add tests for new functionality
 - Update documentation
 - Follow existing code style
-- Ensure CI passes --- ## Acknowledgments - Built for IV&V hardware validation on Sitara and Sitara platforms
+- Ensure CI passes
+
+## Acknowledgments - Built for IV&V hardware validation on Sitara and Sitara platforms
+
 - Uses gRPC for efficient client-server communication
 - Protocol Buffers for portable serialization
-- SQLite3 for durable local storage --- **Questions?** Contact the Joshua development team or file an issue on GitHub.
+- SQLite3 for durable local storage
+
+**Questions?** Contact the Joshua development team or file an issue on GitHub.
