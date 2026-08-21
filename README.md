@@ -1,4 +1,95 @@
-# Joshua-Client > **gRPC-based daemon for IV&V (Independent Verification & Validation) hardware testing on embedded Linux platforms** Joshua-Client is a C++17 daemon that orchestrates hardware validation tests, collects results, and streams them to an Joshua-Server instance. It manages test execution, durable result storage, log collection, and provides gRPC endpoints for both server communication and SDK integration. --- ## Table of Contents - [Overview](#overview)
+# Joshua-Client
+
+## Project Summary
+
+Joshua-Client is the embedded C++17 agent that connects a Joshua test target to Joshua-Server and exposes the target to the Python SDK. The codebase is built with CMake/Ninja and is organized around a long-running application, a gRPC stream to the server, a local HalService endpoint, and a registry of hardware test adapters. Its configuration layer reads TOML settings such as the server address, listening port, spool limits, TLS paths, and log files. The client uses SQLite-backed durable storage so results and collected logs can wait for a reconnected server instead of being discarded during a network interruption.
+
+The execution path is represented by the run orchestrator and module registry. The registry dispatches module/test identifiers to adapters and can return an explicit skipped result for an unsupported module. The HAL bridge serializes test results into the project protobuf contract, while the stream component handles outbound delivery and server commands. A separate HalService gRPC listener supports SDK-triggered tests, and LogCollector, Janitor, and DiagSocket provide operational support around the core run path. The repository also contains an ARM64 Docker build path, systemd installation assets, sample configuration, and Doxygen/CMake metadata. The checked-in tests focus on result serialization and orchestration; hardware behavior and a live server/client deployment still require target-side verification.
+
+## Feature Inventory
+
+| # | Name / Description | Implemented? | Test Coverage? | Manual Test |
+|---:|---|---|---|---|
+| 1 | C++17 daemon entry point and lifecycle | Implemented | Unknown | [ ] Manual verification required |
+| 2 | TOML client configuration | Implemented | Unknown | [ ] Manual verification required |
+| 3 | Bidirectional gRPC stream to Joshua-Server | Implemented | Partial; no live transport test identified | [ ] Manual verification required |
+| 4 | SQLite result/log spool and retry storage | Implemented | Partial; no replay failure test identified | [ ] Manual verification required |
+| 5 | Run orchestration and batching | Implemented | `tests/test_run_orchestrator.cc` | [ ] Manual verification required |
+| 6 | HAL result to protobuf serialization | Implemented | `tests/test_result_serializer.cc` | [ ] Manual verification required |
+| 7 | Module registry and adapter dispatch | Implemented | Partial; indirectly exercised | [ ] Manual verification required |
+| 8 | Unsupported-module stub/skipped result | Implemented | Unknown | [ ] Manual verification required |
+| 9 | HalService gRPC endpoint for SDK calls | Implemented | Unknown | [ ] Manual verification required |
+| 10 | Configurable log tailing and forwarding | Implemented | Unknown | [ ] Manual verification required |
+| 11 | Janitor spool cleanup | Implemented | Unknown | [ ] Manual verification required |
+| 12 | Unix diagnostic socket | Implemented | Unknown | [ ] Manual verification required |
+| 13 | TLS configuration hooks | Partial; live TLS not verified | Unknown | [ ] Manual verification required |
+| 14 | Native and Docker/ARM64 builds | Implemented | Documented; target build unknown | [ ] Manual verification required |
+| 15 | systemd installation/service assets | Implemented | Unknown | [ ] Manual verification required |
+
+## Build and Test
+
+```bash
+make configure
+make build
+cd build/native && ctest --output-on-failure
+```
+
+Focused binaries are `test_result_serializer` and `test_run_orchestrator`. Hardware access, SDK calls, spool replay, and a live Client-to-Server stream need manual integration testing.# Joshua-Client
+
+## Project Summary
+
+Joshua-Client is the embedded C++17 agent that connects a Joshua test target to
+Joshua-Server and exposes the target to the Python SDK. The codebase is built
+with CMake/Ninja and is organized around a long-running application, a gRPC
+stream to the server, a local HalService endpoint, and a registry of hardware
+test adapters. Its configuration layer reads TOML settings such as the server
+address, listening port, spool limits, TLS paths, and log files. The client
+uses SQLite-backed durable storage so results and collected logs can wait for a
+reconnected server instead of being discarded during a network interruption.
+
+The execution path is represented by the run orchestrator and module registry.
+The registry dispatches module/test identifiers to adapters and can return an
+explicit skipped result for an unsupported module. The HAL bridge serializes
+test results into the project protobuf contract, while the stream component
+handles outbound delivery and server commands. A separate HalService gRPC
+listener supports SDK-triggered tests, and LogCollector, Janitor, and
+DiagSocket provide operational support around the core run path. The repository
+also contains an ARM64 Docker build path, systemd installation assets, sample
+configuration, and Doxygen/CMake metadata. The checked-in tests currently focus
+on result serialization and orchestration; hardware behavior and a live
+server/client deployment still require target-side verification.
+
+## Feature Inventory
+
+| # | Name / Description | Implemented? | Test Coverage? | Manual Test |
+|---:|---|---|---|---|
+| 1 | C++17 daemon entry point and application lifecycle | Implemented | Unknown; no dedicated lifecycle test identified | [ ] Manual verification required |
+| 2 | TOML client configuration and sample config | Implemented | Unknown | [ ] Manual verification required |
+| 3 | Outbound bidirectional gRPC stream to Joshua-Server | Implemented | Partial; orchestration tests do not prove live transport | [ ] Manual verification required |
+| 4 | SQLite result and log spool for retry/durability | Implemented | Partial; no failure/replay test identified | [ ] Manual verification required |
+| 5 | Run orchestrator and batching | Implemented | Covered by `tests/test_run_orchestrator.cc` | [ ] Manual verification required |
+| 6 | HAL result to protobuf serialization | Implemented | Covered by `tests/test_result_serializer.cc` | [ ] Manual verification required |
+| 7 | Module registry and adapter dispatch | Implemented | Partial; registry behavior is indirectly exercised | [ ] Manual verification required |
+| 8 | Stub adapter with skipped results for unsupported modules | Implemented | Unknown | [ ] Manual verification required |
+| 9 | HalService gRPC endpoint for SDK calls | Implemented | Unknown | [ ] Manual verification required |
+| 10 | Configurable log tailing and forwarding | Implemented | Unknown | [ ] Manual verification required |
+| 11 | Janitor cleanup of old spool entries | Implemented | Unknown | [ ] Manual verification required |
+| 12 | Unix diagnostic socket | Implemented | Unknown | [ ] Manual verification required |
+| 13 | TLS configuration hooks | Partial; configuration paths exist, live TLS is not verified here | Unknown | [ ] Manual verification required |
+| 14 | Native and Docker/ARM64 build workflows | Implemented | Build commands documented; target build not verified here | [ ] Manual verification required |
+| 15 | systemd installation/service assets | Implemented | Unknown | [ ] Manual verification required |
+
+## Build and Test
+
+```bash
+make configure
+make build
+cd build/native && ctest --output-on-failure
+```
+
+The focused test binaries are `test_result_serializer` and
+`test_run_orchestrator`. Hardware access, SDK-to-client calls, spool replay,
+and a live Client-to-Server stream need a manual integration run.
 - [Architecture](#architecture)
 - [System Requirements](#system-requirements)
 - [Dependencies](#dependencies)
