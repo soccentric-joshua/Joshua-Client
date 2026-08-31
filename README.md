@@ -43,9 +43,8 @@ require target-side verification.
 ## Build and Test
 
 ```bash
-make configure
-make build
-cd build/native && ctest --output-on-failure
+make build          # Docker cross-build (ARM64) — the default and only build path
+make test           # ctest inside Docker
 ```
 
 Focused binaries are `test_result_serializer` and `test_run_orchestrator`. Hardware access, SDK
@@ -135,26 +134,26 @@ calls, spool replay, and a live Client-to-Server stream need manual integration 
 ### Native Build **Using Makefile** (recommended):
 ```bash
 cd ~/workspace/Joshua/Joshua-Client
-make configure # Run CMake
+make docker-configure # Configure inside Docker
 make build # Compile with Ninja
 ``` **Using CMake directly**:
 ```bash
 cd ~/workspace/Joshua/Joshua-Client
-mkdir -p build/native
-cd build/native
+mkdir -p build/cross
+cd build/cross
 cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build . --parallel $(nproc)
 ``` **Output**:
-- Binary: `build/native/bin/joshua-client`
-- Tests: `build/native/bin/test_result_serializer`, `build/native/bin/test_run_orchestrator`
+- Binary: `build/cross/bin/joshua-client`
+- Tests: `build/cross/bin/test_result_serializer`, `build/cross/bin/test_run_orchestrator`
 
 ### Docker Build (Cross-compilation) For cross-compiling from x86_64 to ARM64 (Sitara): 1. **Build Docker image**: ```bash cd ~/workspace/Joshua/Joshua-Client/docker make build # or: docker buildx build --platform linux/arm64 --load -t joshua . ``` 2. **Enter build container**: ```bash make run # Interactive shell in ARM64 container ``` 3. **Build inside container**: ```bash # Inside container: cd/workspace/Joshua-Client make docker-configure make docker-build ``` 4. **Extract binaries**: ```bash # On host: cd ~/workspace/Joshua/Joshua-Client docker run --rm -v $(pwd):/host joshua \ cp -r/workspace/Joshua-Client/build/cross/bin/host/build/cross/ ```
 
-## Installation ### Manual Installation 1. **Copy binary**: ```bash sudo install -m 0755 build/native/bin/joshua-client/usr/bin/joshua-client ``` 2. **Create configuration directory**: ```bash sudo mkdir -p/etc/joshua sudo cp conf/client.conf.sample/etc/joshua/client.conf sudo chown root:root/etc/joshua/client.conf sudo chmod 0644/etc/joshua/client.conf ``` 3. **Create spool directory**: ```bash sudo mkdir -p/var/lib/joshua/spool sudo chown joshua:joshua/var/lib/joshua/spool # See user setup below ``` 4. **Create joshua user** (for systemd service): ```bash sudo useradd -r -s/usr/sbin/nologin -d/var/lib/joshua joshua sudo chown -R joshua:joshua/var/lib/joshua ``` 5. **Install systemd service**: ```bash sudo cp systemd/joshua-client.service/etc/systemd/system/ sudo systemctl daemon-reload ```
+## Installation ### Manual Installation 1. **Copy binary**: ```bash sudo install -m 0755 build/cross/bin/joshua-client/usr/bin/joshua-client ``` 2. **Create configuration directory**: ```bash sudo mkdir -p/etc/joshua sudo cp conf/client.conf.sample/etc/joshua/client.conf sudo chown root:root/etc/joshua/client.conf sudo chmod 0644/etc/joshua/client.conf ``` 3. **Create spool directory**: ```bash sudo mkdir -p/var/lib/joshua/spool sudo chown joshua:joshua/var/lib/joshua/spool # See user setup below ``` 4. **Create joshua user** (for systemd service): ```bash sudo useradd -r -s/usr/sbin/nologin -d/var/lib/joshua joshua sudo chown -R joshua:joshua/var/lib/joshua ``` 5. **Install systemd service**: ```bash sudo cp systemd/joshua-client.service/etc/systemd/system/ sudo systemctl daemon-reload ```
 
 ### CMake Install Alternatively, use the CMake install target:
 ```bash
-cd build/native
+cd build/cross
 sudo cmake --install .
 ``` This installs:
 - Binary → `/usr/bin/joshua-client`
@@ -225,7 +224,7 @@ sudo systemctl restart joshua-client.service
 
 ## Testing ### Run Unit Tests ```bash
 
-cd build/native ctest --output-on-failure
+cd build/cross ctest --output-on-failure
 
 ````Or run individual test binaries:
 ```bash
@@ -303,7 +302,7 @@ honest SKIPPED results.
   **Register in `app.cpp`**:
   `cpp #include "registry/adapters/my_module_adapter.h"// ... reg->register_adapter(std::make_unique<MyModuleAdapter>); ` 4.
   **Build and test**:
-  `bash make build ./build/native/bin/joshua-client --config/etc/joshua/client.conf `
+  `bash make build ./build/cross/bin/joshua-client --config/etc/joshua/client.conf `
 
 ## Troubleshooting ### Common Issues #### 1. **gRPC connection fails** `[ERROR] StreamClient failed to connect to 192.168.1.100:50051` **Solution**: - Verify `server_address` in `/etc/joshua/client.conf` - Check network connectivity: `ping 192.168.1.100` - Ensure Joshua-Server is running and reachable - Check firewall rules: `sudo ufw status` #### 2. **Missing `grpc_cpp_plugin`** `CMake Error: grpc_cpp_plugin not found` **Solution**: `bash sudo apt-get install -y protobuf-compiler-grpc # OR build from source (see Dockerfile) ` #### 3. **Spool database locked** `[ERROR] Spool::init failed: database is locked` **Solution**: - Stop conflicting instance: `sudo systemctl stop joshua-client` - Check for stale processes: `ps aux | grep joshua-client` - Remove lock if safe: `rm/var/lib/joshua/spool/spool.db-shm` #### 4. **Permission denied on `/var/lib/joshua`** `[ERROR] Failed to create spool.db: Permission denied` **Solution**: `bash sudo chown -R joshua:joshua/var/lib/joshua sudo chmod 0755/var/lib/joshua ` #### 5. **HAL library not found** `CMake Error: Could not find Joshua-HAL` **Solution**: - Ensure `Joshua-HAL` is in sibling directory: `bash ls -ld ../Joshua-HAL # Should exist ` - Clone HAL repository: `git clone <hal-repo> ../Joshua-HAL` #### 6. **Port 50052 already in use** `[ERROR] HalService failed to bind: Address already in use` **Solution**: - Check what's using the port: `sudo lsof -i :50052` - Change `hal_service_port` in config, or kill conflicting process
 
