@@ -4,7 +4,7 @@ IMAGE_NAME ?= joshua-client
 
 build:
 	@echo "Building Docker image $(IMAGE_NAME) for Sitara (ARM64)..."
-	docker buildx build --platform linux/arm64 --load --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) -t $(IMAGE_NAME) .
+	docker buildx build --platform linux/arm64 --network host --load --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) -t $(IMAGE_NAME) .
 
 run:
 	# No --gpus flag: Sitara AM62x has Sitara AM62x (not CUDA)
