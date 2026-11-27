@@ -10,7 +10,7 @@ Joshua-Client is the C++17 on-target client/test application. Its CMake project 
 - `Threads`, `spdlog`, `tomlplusplus`, `yaml-cpp`, SQLite3, Protobuf, `protoc`, and `grpc_cpp_plugin` discoverable by CMake. The CMake configuration can use gRPC CMake packages or the `pkg-config` fallback.
 - The sibling `Joshua-HAL` checkout must be present beside this repository because both CMake and generated-protocol inputs reference it.
 - For cross builds: Docker with ARM64/QEMU support. `make docker-install` may install Docker through `sudo apt` if absent.
-- For remote deployment: `sshpass`, SSH/SCP access to the target, and credentials. The defaults are user `nvidia`, password `nvidia`, targets `192.168.1.3` and `192.168.1.13`; override Make variables rather than committing credentials.
+- For remote deployment: `sshpass`, SSH/SCP access to the target, and credentials. The default user is `root` with no password (key-based SSH); targets `192.168.1.3` and `192.168.1.13`; override Make variables rather than committing credentials.
 
 ## 2. Setup
 
